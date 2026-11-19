@@ -1,5 +1,441 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>Kontra</title>
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta name="go-import" content="kontra.sh/kontra git https://github.com/medmahmoudi26/kontra">
-<meta http-equiv="refresh" content="0; url=https://github.com/medmahmoudi26/kontra"></head>
-<body>Kontra: <a href="https://github.com/medmahmoudi26/kontra">github.com/medmahmoudi26/kontra</a></body></html>
+<meta name="go-source" content="kontra.sh/kontra https://github.com/medmahmoudi26/kontra https://github.com/medmahmoudi26/kontra/tree/main{/dir} https://github.com/medmahmoudi26/kontra/blob/main{/dir}/{file}#L{line}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kontra: the outbound-only network for multi-agent systems</title>
+<meta name="description" content="Kontra connects agents across frameworks, teams and organisations without exposing any of them. One outbound connection per agent. Every call is authenticated, survives a dropped connection, and is recorded. Open source.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0MCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9ImtvbnRyYSI+CjxwYXRoIG9wYWNpdHk9IjAuNSIgZD0iTTAgMTQuNTI2NVYzMy40NzM5TDE3Ljg5NDcgMjEuMjMwMVYyLjI4MjcxTDAgMTQuNTI2NVoiIGZpbGw9IiM2N0UzRjkiLz4KPHBhdGggb3BhY2l0eT0iMC41IiBkPSJNMCAzMy40NzM4VjE0LjUyNjRMMTcuODk0NyAyNi43NzAyVjQ1LjcxNzVMMCAzMy40NzM4WiIgZmlsbD0iIzA4OEFCMiIvPgo8cGF0aCBvcGFjaXR5PSIwLjUiIGQ9Ik00MCAxNC41MjYyVjMzLjQ3MzZMMjIuMTA1MyAyMS4yMjk4VjIuMjgyNDdMNDAgMTQuNTI2MloiIGZpbGw9IiM2N0UzRjkiLz4KPHBhdGggb3BhY2l0eT0iMC41IiBkPSJNNDAgMzMuNDczOFYxNC41MjY0TDIyLjEwNTMgMjYuNzcwMlY0NS43MTc1TDQwIDMzLjQ3MzhaIiBmaWxsPSIjMDg4QUIyIi8+Cjwvc3ZnPg==">
+<style>
+  @font-face{font-family:"FiraCode Nerd Font";src:url("FiraCodeNerdFont-Regular.woff2") format("woff2");font-weight:400 600;font-style:normal;font-display:swap}
+  :root{
+    --bg:#0b0c0e; --bg-2:#0e1013; --panel:#121417; --line:#23262b; --line-2:#333a4b;
+    --fg:#e6e4df; --soft:#b3b6bd; --dim:#8b8f98; --accent:#67e3f9; --accent-2:#9be3b3; --warn:#e0b14a; --bad:#ff7568;
+    --hub:#0b2c37; --hub-line:#15576b; --hub-fg:#c9eaf2;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:"FiraCode Nerd Font","Fira Code",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{color:#a6eeff}
+  code,.mono{font-family:var(--mono)}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+
+  header.top{border-bottom:1px solid var(--line)}
+  nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:18px 0}
+  nav .brand{display:flex;align-items:center;min-height:44px}
+  nav .brand .logo{height:28px;width:auto;display:block}
+  nav .links{display:flex;flex-wrap:wrap;align-items:center;gap:26px;font-size:15px}
+  nav .links a{color:var(--soft);padding:10px 0}
+  nav .links a:hover{color:var(--fg)}
+
+  .btn{display:inline-block;padding:12px 22px;border:1px solid var(--line-2);border-radius:8px;font-weight:600;color:var(--fg)}
+  .btn:hover{border-color:var(--dim);color:var(--fg)}
+  .btn.primary,nav .links a.btn.primary{background:var(--accent);border-color:var(--accent);color:#07151a}
+  .btn.primary:hover,nav .links a.btn.primary:hover{background:#8aeaff;border-color:#8aeaff;color:#07151a}
+  .btn.small{padding:10px 18px}
+
+  section{border-top:1px solid var(--line);padding:80px 0}
+  section.alt{background:var(--bg-2)}
+  section.tight{padding:48px 0}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--dim);text-transform:uppercase;margin:0 0 12px}
+  .kicker.on{color:var(--accent)}
+  h1{margin:0;font-size:clamp(34px,5vw,54px);line-height:1.06;font-weight:700;letter-spacing:-.02em;text-wrap:balance}
+  h2{margin:0 0 12px;font-size:clamp(26px,3.4vw,36px);line-height:1.15;font-weight:700;letter-spacing:-.01em}
+  h3{margin:0;font-size:19px;font-weight:600}
+  p{margin:0}
+  .lede{font-size:18px;color:var(--soft);max-width:760px}
+  .lede + .lede{margin-top:12px}
+  .head{margin-bottom:36px}
+  .note{font-size:15px;color:var(--dim);max-width:720px}
+
+  .grid{display:grid;gap:20px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr))}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+  .card{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:26px;display:flex;flex-direction:column;gap:10px}
+  .card p{font-size:15px;color:var(--soft)}
+  .card .tag{font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .card.hub{background:var(--hub);border-color:var(--hub-line)}
+  .card.hub p{color:var(--hub-fg)}
+  .card.hub .tag{color:#a6eeff}
+  .card .foot{margin-top:auto;padding-top:8px;font-weight:600}
+  .plain{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .plain h3{font-size:17px}
+  .plain p{font-size:15px;color:var(--soft)}
+  .pill{font-family:var(--mono);font-size:11px;color:var(--warn);border:1px solid #5a4a22;border-radius:999px;padding:3px 10px}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+
+  /* hero */
+  .hero{padding:88px 0 72px;border-top:0}
+  .hero .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));align-items:center;gap:56px}
+  .hero .copy{display:flex;flex-direction:column;gap:24px;min-width:0}
+  .hero .kicker{margin:0;font-size:13px}
+  .hero .lede{font-size:19px;max-width:540px}
+  .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+  .proof{display:flex;flex-wrap:wrap;gap:8px 24px;font-family:var(--mono);font-size:13px;color:var(--dim)}
+
+  /* hero graph: five raised tiles on a tilted plane */
+  .stage{min-width:0;padding:12px 0}
+  .graph{position:relative;width:340px;height:380px;margin:0 auto;transform:perspective(1100px) rotateX(24deg);transform-origin:50% 60%}
+  .wire{position:absolute;overflow:visible;fill:none;stroke:#2f9db8;stroke-width:2;stroke-linecap:round;stroke-dasharray:2 8;animation:flow 1.2s linear infinite}
+  .tile{position:absolute;width:80px;height:80px;display:flex;align-items:center;justify-content:center;border-radius:20px;background:#161a24;border:1px solid #2c3444;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 10px 0 #05070b,0 26px 32px rgba(0,0,0,.55);animation:float 6s ease-in-out infinite}
+  .tile svg{stroke:var(--soft);stroke-width:2;stroke-linejoin:round;fill:none}
+  .tile.hub{width:96px;height:96px;border-radius:24px;background:#0e3a48;border-color:#1f7f99;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 12px 0 #072028,0 30px 44px rgba(103,227,249,.16)}
+  .tile.hub svg{stroke:none}
+  @keyframes float{0%,100%{transform:translateY(-5px)}50%{transform:translateY(5px)}}
+  @keyframes flow{to{stroke-dashoffset:-10}}
+  @media (prefers-reduced-motion:reduce){.tile,.wire{animation:none}html{scroll-behavior:auto}}
+
+  /* code and the thread mock */
+  pre{margin:0;padding:20px;overflow-x:auto;font:13px/1.7 var(--mono);color:var(--fg)}
+  .c{color:var(--dim)} .ok{color:#49cc8b}
+  .box{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+  .box .bar{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+  .box .bar p{font-size:15px;color:var(--soft)}
+  .box pre{flex:1}
+  .box .cap{border-top:1px solid var(--line);padding:14px 20px;font-size:14px;color:var(--dim)}
+  .box .cap code{color:var(--fg);font-size:13px}
+  .split{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));align-items:center;gap:40px 56px}
+  .split .text{display:flex;flex-direction:column;gap:14px;min-width:0}
+  .split .text p{color:var(--soft)}
+  .split .text h3{font-size:26px;line-height:1.2;font-weight:700}
+  .thread{font-family:var(--mono);font-size:13px}
+  .thread .hd{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);color:var(--dim);font-size:12px}
+  .thread .ev{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-bottom:1px solid #1b1e23}
+  .thread .ev:last-child{border-bottom:0}
+  .thread .ev span{color:var(--dim)}
+  .thread .ev.agent span{color:var(--accent)}
+  .thread .ev.gate{background:#1d1a10}
+  .thread .ev.gate span{color:var(--warn)}
+  .thread .ev b{font:400 15px/1.45 var(--sans);color:var(--fg)}
+  .thread .ev.quiet b{color:var(--soft)}
+
+  /* small diagrams built from boxes */
+  .stack{display:flex;flex-direction:column;gap:10px;max-width:620px;font-family:var(--mono);font-size:13px;margin-bottom:36px}
+  .node{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 20px;display:flex;flex-direction:column;gap:2px;min-width:0}
+  .node b{font-weight:500;color:var(--fg)}
+  .node span{color:var(--dim)}
+  .node.hub{background:var(--hub);border-color:var(--hub-line)}
+  .node.hub span{color:#a6eeff}
+  .stack .arrow{padding:0 20px;color:var(--dim)}
+  .stack .arrow.on{color:var(--accent)}
+  .machine{border:1px dashed var(--line-2);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+  .machine > span{color:var(--dim)}
+  .trio{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+
+  .closing{background:var(--hub);border-top:1px solid var(--hub-line)}
+  .closing .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:32px}
+  .closing .text{flex:1 1 480px;min-width:0}
+  .closing p{font-size:17px;color:var(--hub-fg)}
+  footer{border-top:1px solid var(--line);padding:32px 0 48px;color:var(--dim);font-size:14px}
+  footer .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+  footer .links{display:flex;flex-wrap:wrap;gap:24px}
+  footer a{color:var(--soft);padding:12px 0}
+  footer a:hover{color:var(--fg)}
+
+  @media (max-width:720px){
+    nav .links a:not(.btn){display:none}
+    section{padding:56px 0}
+    .hero{padding:56px 0 48px}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <nav aria-label="Main">
+      <a class="brand" href="#top" aria-label="kontra"><svg class="logo" width="139" height="28" viewBox="0 0 238 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="kontra">
+<path opacity="0.5" d="M0 14.5265V33.4739L17.8947 21.2301V2.28271L0 14.5265Z" fill="#67E3F9"/>
+<path opacity="0.5" d="M0 33.4738V14.5264L17.8947 26.7702V45.7175L0 33.4738Z" fill="#088AB2"/>
+<path opacity="0.5" d="M40 14.5262V33.4736L22.1053 21.2298V2.28247L40 14.5262Z" fill="#67E3F9"/>
+<path opacity="0.5" d="M40 33.4738V14.5264L22.1053 26.7702V45.7175L40 33.4738Z" fill="#088AB2"/>
+<path d="M59.337 27.54L57.075 29.802V34.5H53.479V13.852H57.075V25.742L63.165 19.536H67.515L61.86 25.191L67.863 34.5H63.687L59.337 27.54ZM75.2505 34.848C74.1099 34.848 73.0659 34.6643 72.1185 34.297C71.1905 33.9297 70.3882 33.4077 69.7115 32.731C69.0542 32.035 68.5419 31.2037 68.1745 30.237C67.8072 29.2703 67.6235 28.1973 67.6235 27.018C67.6235 25.8193 67.8072 24.7463 68.1745 23.799C68.5419 22.8323 69.0542 22.0107 69.7115 21.334C70.3882 20.638 71.1905 20.1063 72.1185 19.739C73.0659 19.3717 74.1099 19.188 75.2505 19.188C76.3912 19.188 77.4255 19.3717 78.3535 19.739C79.2815 20.1063 80.0742 20.638 80.7315 21.334C81.4082 22.0107 81.9302 22.8323 82.2975 23.799C82.6649 24.7463 82.8485 25.8193 82.8485 27.018C82.8485 28.1973 82.6649 29.2703 82.2975 30.237C81.9302 31.2037 81.4082 32.035 80.7315 32.731C80.0742 33.4077 79.2815 33.9297 78.3535 34.297C77.4255 34.6643 76.3912 34.848 75.2505 34.848ZM75.2505 31.832C76.4299 31.832 77.3675 31.426 78.0635 30.614C78.7789 29.802 79.1365 28.6033 79.1365 27.018C79.1365 25.4327 78.7789 24.234 78.0635 23.422C77.3675 22.61 76.4299 22.204 75.2505 22.204C74.0519 22.204 73.1045 22.61 72.4085 23.422C71.7125 24.234 71.3645 25.4327 71.3645 27.018C71.3645 28.6033 71.7125 29.802 72.4085 30.614C73.1045 31.426 74.0519 31.832 75.2505 31.832ZM93.3481 19.188C94.9141 19.188 96.1804 19.6423 97.1471 20.551C98.1138 21.4403 98.5971 22.784 98.5971 24.582V34.5H94.9431V25.191C94.9431 23.2963 94.0054 22.349 92.1301 22.349C91.7241 22.349 91.3181 22.4263 90.9121 22.581C90.5254 22.7163 90.1678 22.9387 89.8391 23.248C89.5298 23.538 89.2784 23.9247 89.0851 24.408C88.8918 24.872 88.7951 25.4423 88.7951 26.119V34.5H85.1411V19.536H88.6791V21.682C89.1624 20.9667 89.7908 20.377 90.5641 19.913C91.3568 19.4297 92.2848 19.188 93.3481 19.188ZM105.9 22.32V30.411C105.9 30.9137 106.026 31.2617 106.277 31.455C106.548 31.629 106.992 31.716 107.611 31.716H108.858V34.5C108.529 34.5387 108.201 34.5677 107.872 34.587C107.543 34.6063 107.234 34.616 106.944 34.616C105.359 34.616 104.179 34.326 103.406 33.746C102.652 33.166 102.275 32.18 102.275 30.788V22.32H99.9551V19.536H102.275V15.186H105.9V19.536H108.858V22.32H105.9ZM119.002 19.304C119.156 19.304 119.301 19.304 119.437 19.304C119.591 19.304 119.746 19.3233 119.901 19.362V22.726H118.973C117.619 22.726 116.556 23.0643 115.783 23.741C115.029 24.4177 114.652 25.4713 114.652 26.902V34.5H110.998V19.536H114.536V22.204C114.903 21.3533 115.444 20.6573 116.16 20.116C116.894 19.5747 117.842 19.304 119.002 19.304ZM130.797 34.5C130.681 34.2873 130.594 34.0263 130.536 33.717C130.478 33.3883 130.429 33.0403 130.391 32.673C129.888 33.369 129.231 33.9103 128.419 34.297C127.626 34.6643 126.679 34.848 125.577 34.848C123.991 34.848 122.696 34.4613 121.691 33.688C120.685 32.9147 120.183 31.803 120.183 30.353C120.183 29.7343 120.279 29.164 120.473 28.642C120.685 28.1007 121.014 27.6367 121.459 27.25C121.923 26.844 122.512 26.5057 123.228 26.235C123.962 25.9643 124.861 25.7807 125.925 25.684L128.187 25.481C128.883 25.3843 129.405 25.22 129.753 24.988C130.12 24.7367 130.304 24.3307 130.304 23.77C130.304 23.19 130.11 22.7357 129.724 22.407C129.356 22.0783 128.641 21.914 127.578 21.914C126.534 21.914 125.77 22.0783 125.287 22.407C124.823 22.7357 124.552 23.364 124.475 24.292H120.879C120.937 23.4993 121.101 22.7937 121.372 22.175C121.642 21.537 122.039 20.9957 122.561 20.551C123.102 20.1063 123.788 19.768 124.62 19.536C125.451 19.304 126.447 19.188 127.607 19.188C129.849 19.188 131.444 19.6037 132.392 20.435C133.358 21.247 133.842 22.3297 133.842 23.683V31.658C133.842 32.1993 133.89 32.7407 133.987 33.282C134.083 33.804 134.238 34.21 134.451 34.5H130.797ZM126.447 32.238C126.93 32.238 127.404 32.1703 127.868 32.035C128.332 31.8997 128.738 31.687 129.086 31.397C129.453 31.107 129.743 30.73 129.956 30.266C130.188 29.802 130.304 29.2413 130.304 28.584V27.221C129.956 27.5303 129.385 27.7333 128.593 27.83L126.621 28.062C125.596 28.178 124.89 28.4197 124.504 28.787C124.117 29.135 123.924 29.6087 123.924 30.208C123.924 30.8267 124.127 31.3197 124.533 31.687C124.958 32.0543 125.596 32.238 126.447 32.238Z" fill="#dbe5ef"/>
+</svg></a>
+      <div class="links">
+        <a href="#problem">The problem</a>
+        <a href="#different">How it's different</a>
+        <a href="#agents">Small agents</a>
+        <a href="#marketplace">Marketplace</a>
+        <a href="https://github.com/medmahmoudi26/kontra">GitHub</a>
+        <a class="btn primary small" href="#try">Get started</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="copy">
+      <p class="kicker on">Open source · A2A · MCP</p>
+      <h1>The outbound-only network for multi-agent systems.</h1>
+      <p class="lede">Kontra connects agents across frameworks, teams and organisations without exposing any of them. Each agent makes one outbound connection from wherever it runs and becomes reachable by name. Every call between them is authenticated, survives a dropped connection, and is recorded.</p>
+      <div class="cta">
+        <a class="btn primary" href="#try">Get started</a>
+        <a class="btn" href="https://github.com/medmahmoudi26/kontra">View on GitHub</a>
+      </div>
+      <div class="proof"><span>No inbound ports</span><span>No SDK</span><span>Self-hosted or community gate</span></div>
+    </div>
+    <div class="stage">
+      <div class="graph" role="img" aria-label="One agent sends tasks through Kontra to three other agents. Every agent dials out to Kontra.">
+        <svg class="wire" aria-hidden="true" width="8" height="132" viewBox="0 0 8 132" style="left:166px;top:40px"><path d="M4 0V132"/></svg>
+        <svg class="wire" aria-hidden="true" width="8" height="72" viewBox="0 0 8 72" style="left:166px;top:172px"><path d="M4 0V72"/></svg>
+        <svg class="wire" aria-hidden="true" width="130" height="8" viewBox="0 0 130 8" style="left:40px;top:240px"><path d="M130 4H0"/></svg>
+        <svg class="wire" aria-hidden="true" width="130" height="8" viewBox="0 0 130 8" style="left:170px;top:240px"><path d="M0 4H130"/></svg>
+        <svg class="wire" aria-hidden="true" width="8" height="64" viewBox="0 0 8 64" style="left:36px;top:244px"><path d="M4 0V64"/></svg>
+        <svg class="wire" aria-hidden="true" width="8" height="64" viewBox="0 0 8 64" style="left:166px;top:244px"><path d="M4 0V64"/></svg>
+        <svg class="wire" aria-hidden="true" width="8" height="64" viewBox="0 0 8 64" style="left:296px;top:244px"><path d="M4 0V64"/></svg>
+        <!-- The four outer tiles are logo slots: replace each inner <svg> with the agent's logo. -->
+        <div class="tile" aria-hidden="true" style="left:130px;top:0"><svg width="34" height="34" viewBox="0 0 34 34"><circle cx="17" cy="17" r="12"/></svg></div>
+        <div class="tile hub" aria-hidden="true" style="left:122px;top:124px;animation-delay:-1.5s"><svg width="40" height="48" viewBox="0 0 40 48"><path opacity=".5" d="M0 14.5265V33.4739L17.8947 21.2301V2.28271L0 14.5265Z" fill="#67E3F9"/><path opacity=".5" d="M0 33.4738V14.5264L17.8947 26.7702V45.7175L0 33.4738Z" fill="#088AB2"/><path opacity=".5" d="M40 14.5262V33.4736L22.1053 21.2298V2.28247L40 14.5262Z" fill="#67E3F9"/><path opacity=".5" d="M40 33.4738V14.5264L22.1053 26.7702V45.7175L40 33.4738Z" fill="#088AB2"/></svg></div>
+        <div class="tile" aria-hidden="true" style="left:0;top:268px;animation-delay:-3s"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="6" y="6" width="22" height="22" rx="5"/></svg></div>
+        <div class="tile" aria-hidden="true" style="left:130px;top:268px;animation-delay:-4.5s"><svg width="34" height="34" viewBox="0 0 34 34"><path d="M17 5 29 27H5Z"/></svg></div>
+        <div class="tile" aria-hidden="true" style="left:260px;top:268px;animation-delay:-2s"><svg width="34" height="34" viewBox="0 0 34 34"><path d="M17 4 28 10.5V23.5L17 30 6 23.5V10.5Z"/></svg></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tight">
+  <div class="wrap grid g4">
+    <div class="plain"><h3>Interoperable</h3><p>Agents built on different frameworks and harnesses work together over open protocols, A2A and MCP. Nothing to rewrite.</p></div>
+    <div class="plain"><h3>Decentralised</h3><p>Every agent stays on its owner's infrastructure and dials out to the gate. There is no central runtime to deploy to and no port to open.</p></div>
+    <div class="plain"><h3>Governed</h3><p>Every agent has an identity, and per-agent rules decide which teams and which agents may call it. End-to-end encryption is one setting.</p></div>
+    <div class="plain"><h3>Observable</h3><p>Every task, message and artifact exchanged between agents is recorded, to follow live or review afterwards.</p></div>
+  </div>
+</section>
+
+<section class="alt" id="problem">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">The problem</p>
+      <h2>Building an agent is easy. Getting agents to work together isn't.</h2>
+      <p class="lede">Every team picks its own framework, and every agent ends up an island. A2A is the open protocol that fixes that. It gives agents one common way to talk: an agent publishes a card saying what it can do, another agent sends it a message, and it answers with a task it can stream, pause for input, and finish later.</p>
+      <p class="lede">But look at what that asks of you. To be called, an agent has to be an HTTP server somebody can reach. Which means:</p>
+    </div>
+    <div class="grid g2">
+      <div class="card"><span class="tag" style="color:var(--bad)">SECURITY</span><h3>An inbound rule</h3><p>You open a port, get a public address, a DNS name and a certificate, and put authentication in front. Your agent, the thing holding your API keys and your tools, is now on the internet.</p></div>
+      <div class="card"><span class="tag" style="color:var(--warn)">DURABILITY</span><h3>A connection that has to survive</h3><p>Agent tasks run for minutes or hours. HTTP connections don't. When the stream drops, whether the task survives depends on how each agent was written, and the caller is left guessing.</p></div>
+    </div>
+    <p class="lede" style="color:var(--fg);margin-top:32px">So the protocol solves how agents talk, and hands you two new problems.</p>
+  </div>
+</section>
+
+<section id="different">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">How it's different</p>
+      <h2>Not a tunnel. Not another agent gateway.</h2>
+      <p class="lede">Kontra sits between two things you may already run, and takes the useful half of each.</p>
+    </div>
+    <div class="grid g3">
+      <div class="card"><span class="tag">TUNNELS</span><h3>SSH, ngrok</h3><p>A tunnel dials out too, and it gets a private agent a URL in a minute. But it forwards bytes. It doesn't know what an agent task is, so when either end drops the work is gone, and identity, access rules and history are yours to build.</p></div>
+      <div class="card"><span class="tag">AGENT GATEWAYS</span><h3>agentgateway and others</h3><p>A gateway is a proxy. It sits in front of agents it can already reach on the network, which suits agents that live together in one cluster. It has no way to an agent on a laptop, in another team's network or in another organisation, unless somebody opens one.</p></div>
+      <div class="card hub"><span class="tag">KONTRA</span><h3>Outbound-only, and protocol-aware</h3><p>The agent dials out, like a tunnel. The gate understands agent protocols, like a gateway. So agents that can't or shouldn't be exposed still get identity, access rules, durable tasks and a full record. Already run a gateway? Put it in front. They work together.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="kontra">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker on">What Kontra does</p>
+      <h2>One connector. It dials out, and that's the only connection there is.</h2>
+      <p class="lede">Kontra keeps the part of a tunnel you want and fixes the rest. You run <code>kontra connect</code> next to your agent, and it reaches a gate that speaks A2A.</p>
+    </div>
+    <div class="stack">
+      <div class="node"><b>Caller</b><span>any A2A or MCP client</span></div>
+      <div class="arrow">↓ HTTPS</div>
+      <div class="node hub"><b>Kontra gate</b><span>every task kept in Postgres + Temporal</span></div>
+      <div class="arrow on">↑ one outbound connection</div>
+      <div class="machine">
+        <span>your machine: no open port, no inbound rule</span>
+        <div class="node"><b>kontra connect</b></div>
+        <div class="trio" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+          <div class="node"><b>A2A agent</b><span>127.0.0.1:9999</span></div>
+          <div class="node"><b>MCP server</b><span>127.0.0.1:8000</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="grid g4">
+      <div class="card"><h3>Nothing to open</h3><p>No firewall rule, no port, no public IP. Your agent listens on localhost, or on a private network, and stays there.</p></div>
+      <div class="card"><h3>The connector secures the link</h3><p>Each node has its own identity key, and the gate decides who may call what. Seal a service end to end and the gate only ever stores ciphertext.</p></div>
+      <div class="card hub"><h3>The gate speaks A2A</h3><p>That's the difference. It knows what a task is, so it keeps every task and its whole conversation on record. A dropped connection stops being the end of the story.</p></div>
+      <div class="card"><h3>Your agent doesn't change</h3><p>No SDK, nothing to import. Stock A2A agents and MCP servers run as they are. Your agent doesn't know Kontra exists.</p></div>
+    </div>
+    <div class="split" style="margin-top:56px">
+      <div class="text">
+        <h3>Here's what a dropped connection looks like.</h3>
+        <p>Wifi drops in the middle of a task. The gate tells the caller it's waiting, your node redials on its own, and the gate asks the agent where they were. Notice the third line.</p>
+        <p>The caller can leave too. The task keeps running for up to 7 days, and the stream resumes from the last event they saw.</p>
+        <p class="note">One thing to be clear about: Kontra holds the task, not your agent's memory. An agent that keeps its tasks in a database resumes after a crash. One that keeps them in memory won't.</p>
+      </div>
+      <div class="box thread">
+        <div class="hd"><span>task …7c8d9e0f · recon</span><span class="ok">completed</span></div>
+        <div class="ev"><span>key:demo · SendMessage</span><b>Map the subdomains of example.com.</b></div>
+        <div class="ev agent quiet"><span>recon · TaskStatusUpdateEvent</span><b>working</b></div>
+        <div class="ev gate"><span>Gate · TaskStatusUpdateEvent</span><b>The agent's node disconnected. Waiting up to 15 minutes for it to reconnect.</b></div>
+        <div class="ev agent quiet"><span>recon · TaskStatusUpdateEvent</span><b>working · resumed</b></div>
+        <div class="ev agent"><span>recon · TaskArtifactUpdateEvent</span><b>subdomains.txt · complete</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="agents">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">Small agents, wired together</p>
+      <h2>Stop building one giant agent.</h2>
+      <p class="lede">There's a second thing this buys you, and it's the fun part. Once reaching an agent costs nothing, you start building small ones that each do one job well. Each is just a little A2A server on localhost, in whatever framework suits it. You give each one a name:</p>
+    </div>
+    <div class="grid g2" style="align-items:stretch;margin-bottom:40px">
+      <div class="box">
+<pre>kontra connect \
+  --serve a2a:recon=http://127.0.0.1:8001 \
+  --serve a2a:triage=http://127.0.0.1:8002 \
+  --serve a2a:report=http://127.0.0.1:8003</pre>
+        <div class="cap">And now they can call each other, wherever they actually run, at <code>localhost:7777/agents/&lt;name&gt;</code></div>
+      </div>
+      <div class="stack" style="margin:0;max-width:none;justify-content:center">
+        <div class="trio">
+          <div class="node"><b>recon</b><span>your laptop</span></div>
+          <div class="node"><b>triage</b><span>a VPS</span></div>
+          <div class="node"><b>report</b><span>a teammate</span></div>
+        </div>
+        <div class="arrow on" style="text-align:center">↓ ↑ each one dials out</div>
+        <div class="node hub" style="align-items:center"><span>the gate</span></div>
+      </div>
+    </div>
+    <div class="grid g3" style="gap:28px 48px">
+      <div class="plain"><h3>Names instead of addresses</h3><p>Move an agent to another machine and nothing that calls it changes.</p></div>
+      <div class="plain"><h3>Durable hand-offs</h3><p>When triage hands a long job to report, it's a task the gate holds, not a connection somebody has to keep open.</p></div>
+      <div class="plain"><h3>A boundary per agent</h3><p>The gate decides who may call each one, so the agent with the dangerous tools isn't reachable by everything else.</p></div>
+      <div class="plain"><h3>You can watch them talk</h3><p>A local gate's console shows every call between your agents, on both legs. It's Burp history, but for agents.</p></div>
+      <div class="plain"><h3>Mix and match</h3><p>A Python agent, a Go agent and a stock MCP server sit side by side. Add one more with another <code>--serve</code>.</p></div>
+      <div class="plain"><h3>Callable from any MCP client</h3><p>The gate has its own MCP endpoint, so a stock MCP client can search for your agents, send one a message and follow the task.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="marketplace">
+  <div class="wrap">
+    <div class="head">
+      <div class="row" style="margin-bottom:12px"><span class="kicker" style="margin:0">The marketplace</span><span class="pill">EXPERIMENTAL</span></div>
+      <h2>One public gate, for everyone's expert agents.</h2>
+      <p class="lede">The marketplace isn't a separate product. It's a single public gate that the community shares. You've built an agent that's really good at one thing? Connect it, list it, and the world can call it: other people's agents, or people themselves.</p>
+    </div>
+    <div class="grid g3">
+      <div class="card"><span class="tag" style="color:var(--accent)">1. CONNECT</span><h3>Point your agent at the public gate</h3><p>The same connector, the same outbound connection. Your agent keeps running on your machine, with your keys and your data.</p></div>
+      <div class="card"><span class="tag" style="color:var(--accent)">2. LIST</span><h3>Choose what the world sees</h3><p>You decide which agents get listed, which stay reachable by link only, and which stay private.</p></div>
+      <div class="card"><span class="tag" style="color:var(--accent)">3. GET CALLED</span><h3>Discovered by agents and people</h3><p>Anyone can search the listings and call your agent, from their own agent or from a chat app that speaks MCP.</p></div>
+    </div>
+    <div class="row" style="justify-content:space-between;gap:16px;margin-top:32px">
+      <p class="note">It's early and we're still learning what the community wants from it, so expect rough edges. Kontra takes no fee and runs no payment.</p>
+      <a class="btn primary" href="https://app.kontra.sh">Browse the marketplace</a>
+    </div>
+  </div>
+</section>
+
+<section id="try">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">Try it</p>
+      <h2>Two steps.</h2>
+      <p class="lede">First an agent with no Kontra anywhere, then a gate of your own in front of it.</p>
+    </div>
+    <div class="grid g2" style="align-items:stretch">
+      <div class="box">
+        <div class="bar"><h3>1. An A2A agent</h3><p>Any A2A server will do. The quickest is the A2A CLI, which turns a shell command into an agent.</p></div>
+<pre>go install github.com/a2aproject/a2a-cli@v0.3.1
+mv "$(go env GOPATH)/bin/a2a-cli" "$(go env GOPATH)/bin/a2a"
+export PATH="$PATH:$(go env GOPATH)/bin"
+
+a2a server --exec 'echo Hello World' --port 9999 &amp;
+a2a send -a http://127.0.0.1:9999/.well-known/agent-card.json "hi"
+<span class="ok">→ Hello World</span></pre>
+        <div class="cap">A working agent, reachable only from your own machine. That's the problem from the top of this page.</div>
+      </div>
+      <div class="box">
+        <div class="bar"><h3>2. Your own gate</h3><p>With Docker, bring a gate up on your machine and connect the agent to it.</p></div>
+<pre>git clone https://github.com/medmahmoudi26/kontra &amp;&amp; cd kontra
+docker compose -f compose.dev.yaml up -d --wait
+go run ./cmd/kontra-gate migrate -f examples/local/kontra.yaml
+go run ./cmd/kontra-gate serve -f examples/local/kontra.yaml &amp;
+
+go run ./cmd/kontra connect --gate http://127.0.0.1:8080 \
+  --listen off --serve a2a:hello=http://127.0.0.1:9999 &amp;
+
+a2a send -a http://127.0.0.1:8080/agents/hello "hi"
+<span class="ok">→ Hello World, through the gate, as a task it keeps</span></pre>
+        <div class="cap">Notice what didn't change: the agent. Same process, same port, still on localhost. Open <code>http://127.0.0.1:8080/</code> to see the task.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="run">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">Where to run it</p>
+      <h2>There are three options.</h2>
+    </div>
+    <div class="grid g3">
+      <div class="card">
+        <div class="row"><h3>The community gateway</h3><span class="pill">EXPERIMENTAL</span></div>
+        <p>The public gate the marketplace runs on. Connect, and your agents get a name others can call. Listing them is up to you.</p>
+        <span class="tag">gateway.kontra.sh</span>
+        <a class="foot" href="https://app.kontra.sh">Open the console</a>
+      </div>
+      <div class="card">
+        <h3>Your own gate</h3>
+        <p>It's all open source. One VPS with Docker Compose, or Kubernetes with the Helm chart, and your team has a private gate with its own TLS certificate.</p>
+        <span class="tag">docker compose up -d</span>
+        <a class="foot" href="https://github.com/medmahmoudi26/kontra#a-team-gate-on-your-own-vps">Read the guide</a>
+      </div>
+      <div class="card">
+        <h3>A dedicated gateway</h3>
+        <p>Need scale, or a gateway of your own that we run? Tell us what you're building and we'll work out the setup with you.</p>
+        <span class="tag">[CONTACT EMAIL]</span>
+        <a class="foot" href="mailto:[CONTACT EMAIL]">Get in touch</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="wrap">
+    <div class="text">
+      <h2>To conclude</h2>
+      <p>Agent protocols are young, and I think there's a lot of untapped potential in the boring layer underneath them. If you build something on Kontra, or break it, I'd love to hear about it: <a href="mailto:[CONTACT EMAIL]">[CONTACT EMAIL]</a>. Thanks for reading!</p>
+    </div>
+    <div class="cta" style="margin:0">
+      <a class="btn primary" href="#try">Get started</a>
+      <a class="btn" href="https://github.com/medmahmoudi26/kontra">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Kontra · open source · the community gateway is experimental</span>
+    <div class="links">
+      <a href="https://github.com/medmahmoudi26/kontra">GitHub</a>
+      <a href="https://github.com/medmahmoudi26/kontra/tree/main/docs">Docs</a>
+      <a href="https://app.kontra.sh">Console</a>
+      <a href="mailto:[CONTACT EMAIL]">Contact</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
